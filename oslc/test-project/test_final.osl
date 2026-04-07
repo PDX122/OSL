@@ -1,0 +1,36 @@
+// OSL Test File - Core Features That Work
+let x: int = 42;
+let y: float = 3.14;
+let z: bool = true;
+let s: str = "hello";
+let lst: list<str> = ["a", "b", "c"];
+let mp: map<str, int> = { "a": 1, "b": 2 };
+
+fn add(a: int, b: int) -> int { return a + b; }
+fn greet(name: str) -> str { return "Hello " + name; }
+
+let result: int = add(1, 2);
+let msg: str = greet("World");
+
+if result > 0 { log.info("positive"); }
+
+server "test" {
+    port 8080;
+    host "0.0.0.0";
+    workers 4;
+}
+
+http {
+    version HTTP1_1;
+    compression gzip;
+}
+
+route GET "/" { respond 200 "OK"; }
+route GET "/health" { respond 200 { "status": "ok" }; }
+route POST "/api" { respond 201 { "created": true }; }
+
+log {
+    level info;
+    format text;
+    output [stdout];
+}

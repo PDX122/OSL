@@ -1,0 +1,29 @@
+// OSL Basic Test - Uses braces for route bodies
+let x: int = 1;
+let y: int = 2;
+let sum: int = x + y;
+let name: str = "test";
+let flag: bool = true;
+
+fn add(a: int, b: int) -> int {
+    return a + b;
+}
+
+server "test" {
+    port 8080;
+    host "0.0.0.0";
+    workers 4;
+}
+
+route GET "/" {
+    respond 200 "OK";
+}
+
+route GET "/health" {
+    respond 200 { "status": "ok" };
+}
+
+log {
+    level info;
+    format text;
+}

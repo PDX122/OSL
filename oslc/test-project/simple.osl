@@ -1,0 +1,33 @@
+// OSL Test File - Simple features
+let x: int = 1;
+let y: int = 2;
+let sum: int = x + y;
+
+fn foo(a: int) -> int {
+    return a + 1;
+}
+
+server "test" {
+    port 8080;
+    host "0.0.0.0";
+    workers 4;
+}
+
+http {
+    version HTTP1_1;
+    compression gzip;
+}
+
+route GET "/" {
+    respond 200 "OK";
+}
+
+route GET "/health" {
+    respond 200 { "status": "ok" };
+}
+
+log {
+    level info;
+    format text;
+    output [stdout];
+}

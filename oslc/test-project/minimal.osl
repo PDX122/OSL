@@ -1,0 +1,5 @@
+// OSL Minimal Test
+let x: int = 1;
+server "test" { port 8080; }
+route GET "/" { respond 200 "OK"; }
+log { level info; }

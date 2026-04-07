@@ -1,0 +1,442 @@
+// OSL Comprehensive Test Suite
+// Tests: Variables, Types, Functions, Control Flow, Server Config, HTTP, Logging
+
+// === VARIABLES & TYPES ===
+let test_int: int = 42;
+let test_float: float = 3.14;
+let test_bool: bool = true;
+let test_string: str = "Hello OSL";
+let test_list: list<str> = ["apple", "banana", "cherry"];
+let test_map: map<str, int> = { "one": 1, "two": 2, "three": 3 };
+
+// === FUNCTIONS ===
+fn add(a: int, b: int) -> int {
+    return a + b;
+}
+
+fn multiply(a: int, b: int) -> int {
+    return a * b;
+}
+
+fn greet(name: str) -> str {
+    return "Hello, " + name + "!";
+}
+
+fn is_even(n: int) -> bool {
+    return n % 2 == 0;
+}
+
+fn sum_list(items: list<int>) -> int {
+    let total: int = 0;
+    for item in items {
+        total = total + item;
+    }
+    return total;
+}
+
+// === EXPRESSIONS ===
+let result: int = add(10, 20);
+let product: int = multiply(5, 6);
+let greeting: str = greet("World");
+let even_check: bool = is_even(42);
+let list_sum: int = sum_list([1, 2, 3, 4, 5]);
+
+// === CONTROL FLOW ===
+if result > 25 {
+    log.info("Result is greater than 25");
+} else {
+    log.info("Result is 25 or less");
+}
+
+if test_bool == true {
+    log.info("Boolean test passed");
+}
+
+// === LOOPS ===
+loop 3 {
+    log.info("Loop iteration");
+}
+
+let counter: int = 0;
+while counter < 5 {
+    counter = counter + 1;
+}
+
+// For loop
+let fruits: list<str> = ["apple", "banana", "cherry"];
+for fruit in fruits {
+    log.info(fruit);
+}
+
+// === SERVER DECLARATION ===
+server "test-server" {
+    port 8080;
+    host "0.0.0.0";
+    workers 4;
+    backlog 128;
+    timeout 30;
+    keep_alive true;
+    max_connections 1000;
+    graceful_shutdown true;
+    shutdown_timeout 15;
+    restart_on_crash false;
+}
+
+// === HTTP CONFIG ===
+http {
+    version HTTP1_1;
+    compression gzip;
+    max_body_size 10485760;
+    max_headers 100;
+    header_timeout 10;
+    body_timeout 30;
+    idle_timeout 60;
+    pipeline true;
+}
+
+// === ROUTES ===
+route GET "/" {
+    respond 200 "Welcome to OSL Test Server";
+}
+
+route GET "/health" {
+    respond 200 { "status": "ok", "version": "1.0" };
+}
+
+route GET "/json" {
+    respond 200 { "message": "JSON response", "data": [1, 2, 3] };
+}
+
+route GET "/test/:id" {
+    respond 200 { "test_id": params.id };
+}
+
+route POST "/submit" {
+    respond 201 { "success": true };
+}
+
+route PUT "/update/:id" {
+    respond 200 { "updated": true };
+}
+
+route DELETE "/delete/:id" {
+    respond 204;
+}
+
+route PATCH "/patch/:id" {
+    respond 200;
+}
+
+// === WEBSOCKET ===
+websocket "/ws" {
+    max_message_size 1048576;
+    ping_interval 30;
+    ping_timeout 10;
+    compression true;
+}
+
+// === SOCKET CONFIG ===
+socket tcp {
+    bind "0.0.0.0:9000";
+    listen 128;
+    reuse_addr true;
+    reuse_port true;
+    no_delay true;
+    recv_buffer 65536;
+    send_buffer 65536;
+    keepalive true;
+    keepalive_idle 60;
+    keepalive_interval 10;
+    keepalive_count 5;
+}
+
+socket udp {
+    bind "0.0.0.0:9001;
+    broadcast true;
+}
+
+socket unix {
+    path "/tmp/osl-test.sock";
+    permissions 0o660;
+}
+
+// === TLS CONFIG ===
+tls {
+    cert "/etc/ssl/certs/server.crt";
+    key "/etc/ssl/private/server.key";
+    ca "/etc/ssl/certs/ca-bundle.crt";
+    min_version TLS12;
+    max_version TLS13;
+    hsts true;
+    hsts_max_age 31536000;
+    ocsp_stapling true;
+    client_auth optional;
+    session_cache true;
+    session_timeout 300;
+}
+
+// === AUTH ===
+auth jwt {
+    secret env("JWT_SECRET");
+    algorithm HS256;
+    expiry 3600;
+    refresh_expiry 604800;
+    issuer "osl-test";
+    audience "osl-client";
+}
+
+auth basic {
+    realm "Test Realm";
+    users {
+        "admin": "admin123";
+        "user": "password";
+    };
+}
+
+auth api_key {
+    header "X-API-Key";
+    keys ["key1", "key2", "key3"];
+}
+
+// === SECURITY ===
+security {
+    xss_protection true;
+    content_type_nosniff true;
+    frame_options DENY;
+    referrer_policy "no-referrer";
+    csp "default-src self";
+    hide_server_header true;
+}
+
+// === RATE LIMITING ===
+rate_limit global {
+    requests 1000;
+    window 60;
+    burst 200;
+    strategy sliding_window;
+}
+
+rate_limit per_ip {
+    requests 100;
+    window 60;
+    burst 20;
+    key request.ip;
+}
+
+rate_limit route POST "/login" {
+    requests 5;
+    window 60;
+    lockout 300;
+    respond 429 { "error": "Too many attempts" };
+}
+
+// === MIDDLEWARE ===
+middleware cors {
+    allow_origins ["https://example.com"];
+    allow_methods [GET, POST, PUT, DELETE, OPTIONS];
+    allow_headers ["Authorization", "Content-Type"];
+    expose_headers ["X-Request-Id"];
+    allow_credentials true;
+    max_age 86400;
+}
+
+middleware body_parser {
+    json true;
+    urlencoded true;
+    multipart true;
+    max_size 52428800;
+}
+
+middleware request_id {
+    header "X-Request-Id";
+    generate uuid_v4;
+}
+
+middleware compression {
+    algorithm gzip;
+    min_size 1024;
+    level 6;
+}
+
+middleware timeout {
+    request 30;
+    response 60;
+    idle 120;
+}
+
+// Apply middleware
+apply cors to all;
+
+// === PROCESS CONFIG ===
+process {
+    workers 4;
+    threads_per_worker 2;
+    affinity auto;
+    max_memory 1073741824;
+    stack_size 8388608;
+    nice 0;
+    user "www-data";
+    group "www-data";
+    daemonize false;
+}
+
+// === THREAD POOL ===
+thread pool {
+    min 2;
+    max 16;
+    idle_timeout 30;
+    queue_size 1024;
+    overflow reject;
+}
+
+// === SPAWN ===
+spawn interval 60 {
+    log.info("Periodic task executed");
+}
+
+// === UPSTREAM ===
+upstream backend {
+    strategy round_robin;
+    health_check "/health" interval 10 timeout 3;
+    max_fails 3;
+    fail_timeout 30;
+
+    server "127.0.0.1:8081" weight 3;
+    server "127.0.0.1:8082" weight 3;
+    server "127.0.0.1:8083" weight 1 backup;
+}
+
+// === PROXY ===
+proxy "/api" -> backend {
+    timeout 30;
+    buffer_size 8192;
+    pass_headers ["Authorization", "X-Request-Id"];
+    retry 3;
+    retry_on [502, 503, 504];
+}
+
+// === DATABASE ===
+db postgres {
+    host "localhost";
+    port 5432;
+    name "testdb";
+    user "testuser";
+    pass "testpass";
+    pool_min 5;
+    pool_max 20;
+    timeout 10;
+    ssl false;
+    ssl_mode disable;
+}
+
+db mysql {
+    host "localhost";
+    port 3306;
+    name "testdb";
+    user "testuser";
+    pass "testpass";
+    pool_max 20;
+}
+
+// === CACHE ===
+cache redis {
+    host "localhost";
+    port 6379;
+    pass "";
+    db 0;
+    pool 10;
+    timeout 5;
+}
+
+cache memory {
+    max_size 536870912;
+    eviction lru;
+}
+
+// === LOGGING ===
+log {
+    level debug;
+    format json;
+    output [stdout, "/var/log/osl/test.log"];
+    rotate {
+        max_size 104857600;
+        max_files 10;
+        compress true;
+    }
+    include_request_id true;
+    include_timestamp true;
+    include_caller true;
+}
+
+// === HEALTH ===
+health {
+    endpoint "/health";
+    endpoint "/readiness";
+    endpoint "/liveness";
+    include_uptime true;
+    include_memory true;
+    include_cpu true;
+    include_connections true;
+}
+
+// === METRICS ===
+metrics prometheus {
+    endpoint "/metrics";
+    prefix "osl_";
+    labels { "app": "test-server", "env": "test" };
+}
+
+// === MONITORING ===
+monitor alerts {
+    cpu_above 90 for 60 -> alert "high_cpu";
+    memory_above 80 for 120 -> alert "high_mem";
+    error_rate_above 5 for 30 -> alert "high_errors";
+    connections_above 9000 -> alert "near_limit";
+}
+
+// === STATIC FILES ===
+static "/public" -> "/var/www/public" {
+    cache_control "public, max-age=31536000";
+    etag true;
+    last_modified true;
+    index ["index.html", "index.htm"];
+    gzip true;
+    brotli true;
+    dotfiles deny;
+}
+
+// === ENVIRONMENT ===
+env {
+    file ".env";
+    override false;
+}
+
+config {
+    file "config/test.osl";
+    watch false;
+    format osl;
+}
+
+// === ERROR HANDLING ===
+try {
+    let data: int = 100 / 0;
+} catch err {
+    log.error("Division error: " + err.message);
+    respond 500 { "error": "Internal error" };
+} finally {
+    log.info("Cleanup completed");
+}
+
+on panic {
+    log.fatal("Server panicked - restarting");
+    server.restart;
+}
+
+// === DYNAMIC VALUES ===
+let port: int = env("PORT").to_int ?? 8080;
+let debug: bool = env("DEBUG").to_bool ?? false;
+let host: str = env("HOST") ?? "0.0.0.0";
+
+// === TEST COMPLETE ===
+log.info("=== OSL Test Suite Loaded Successfully ===");
+log.info("All language features tested");

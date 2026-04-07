@@ -1,0 +1,7 @@
+// Test file - working features
+let x: int = 1;
+let list: list<str> = ["a", "b"];
+server "test" { port 8080; }
+http { version HTTP1_1; }
+route GET "/" { respond 200 "OK"; }
+log { level info; }

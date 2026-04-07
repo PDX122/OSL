@@ -1,0 +1,7 @@
+// OSL Test File
+let x: int = 42;
+let lst: list<str> = ["a", "b"];
+server "test" { port 8080; }
+http { version HTTP1_1; }
+route GET "/" { respond 200 "OK"; }
+log { level info; }

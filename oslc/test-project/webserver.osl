@@ -1,0 +1,30 @@
+server "my-server" {
+    port 8080;
+    host "0.0.0.0";
+    workers 4;
+}
+
+http {
+    version HTTP1_1;
+    compression gzip;
+}
+
+route GET "/" {
+    respond 200 "<!DOCTYPE html><html><head><title>OSL Server</title></head><body style=background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;color:#fff;font-family:Arial><div style=background:rgba(0,0,0,0.3);padding:40px;border-radius:20px;text-align:center><h1>OSL Server</h1><p>Welcome to Open Server Language</p><a href=/about style=color:#fff>About</a> | <a href=/api style=color:#fff>API</a></div></body></html>";
+}
+
+route GET "/about" {
+    respond 200 "<!DOCTYPE html><html><head><title>About</title></head><body style=background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;color:#fff;font-family:Arial><div style=background:rgba(0,0,0,0.3);padding:40px;border-radius:20px><h1>About OSL</h1><p>OSL is a server programming language built with Rust</p><a href=/ style=color:#fff>Back</a></div></body></html>";
+}
+
+route GET "/api" {
+    respond 200 "<!DOCTYPE html><html><head><title>API</title></head><body style=background:#222;color:#0f0;font-family:monospace;padding:20px><h1>API Endpoints</h1><ul><li>GET / - Home</li><li>GET /about - About</li><li>GET /api - This</li><li>GET /status - JSON status</li></ul><a href=/ style=color:#0f0>Back</a></body></html>";
+}
+
+route GET "/status" {
+    respond 200 { "status": "ok", "server": "OSL" };
+}
+
+log {
+    level info;
+}
