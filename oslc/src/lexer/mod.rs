@@ -167,13 +167,22 @@ impl Lexer {
     }
 
     fn advance(&mut self) -> char {
+        if self.pos >= self.input.len() {
+            return '\0';
+        }
         let c = self.input[self.pos];
         self.pos += 1;
         c
     }
 
     fn next_token(&mut self) -> Token {
+        if self.is_at_end() {
+            return Token::Eof;
+        }
         let c = self.advance();
+        if c == '\0' {
+            return Token::Eof;
+        }
         match c {
             '(' => Token::Symbol(Symbol::LParen),
             ')' => Token::Symbol(Symbol::RParen),
@@ -265,7 +274,10 @@ impl Lexer {
         let mut s = String::new();
         s.push(first);
         while !self.is_at_end() {
-            let c = self.peek().unwrap();
+            let c = match self.peek() {
+                Some(c) => c,
+                None => break,
+            };
             if c.is_alphanumeric() || c == '_' || c == '-' {
                 s.push(self.advance());
             } else {
