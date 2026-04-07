@@ -5,11 +5,12 @@ use crate::ast::*;
 pub struct Parser {
     tokens: Vec<Token>,
     pos: usize,
+    program: Program,
 }
 
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Self {
-        Parser { tokens, pos: 0 }
+        Parser { tokens, pos: 0, program: Program::new() }
     }
 
     pub fn parse(&mut self) -> Program {
@@ -80,6 +81,7 @@ impl Parser {
 
     fn parse_stmt(&mut self) -> Stmt {
         match self.peek() {
+            Token::Keyword(Keyword::Import) => self.parse_import(),
             Token::Keyword(Keyword::Let) => self.parse_var_decl(),
             Token::Keyword(Keyword::Fn) => self.parse_function(),
             Token::Keyword(Keyword::If) => self.parse_if(),
@@ -153,6 +155,36 @@ impl Parser {
         
         self.expect(Token::Symbol(Symbol::Semicolon), "var declaration");
         Stmt::VarDecl { name, ty, value }
+    }
+
+    fn parse_import(&mut self) -> Stmt {
+        self.advance();
+        let path = match self.peek() {
+            Token::String(s) => s.clone(),
+            Token::Ident(s) => s.clone(),
+            _ => panic!("Expected import path"),
+        };
+        self.advance();
+        
+        let alias = if self.match_keyword(&Keyword::As) {
+            match self.peek() {
+                Token::Ident(s) => {
+                    let a = s.clone();
+                    self.advance();
+                    Some(a)
+                }
+                _ => None,
+            }
+        } else {
+            None
+        };
+        
+        self.expect(Token::Symbol(Symbol::Semicolon), "import statement");
+        
+        let import = Import { path: path.clone(), alias };
+        self.program.imports.push(import);
+        
+        Stmt::Expr(Expr::Ident(path))
     }
 
     fn parse_type(&mut self) -> Type {

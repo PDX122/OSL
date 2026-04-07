@@ -15,6 +15,7 @@ use lexer::Lexer;
 use parser::Parser;
 use typecheck::TypeChecker;
 use codegen::generate_rust;
+use ast::Stmt;
 
 struct Config {
     command: Command,
@@ -43,6 +44,7 @@ enum Command {
     Logs,
     Metrics,
     Health,
+    Repl,
     Help,
 }
 
@@ -63,6 +65,7 @@ impl Config {
             Some("logs") => Command::Logs,
             Some("metrics") => Command::Metrics,
             Some("health") => Command::Health,
+            Some("repl") | Some("shell") | Some("i") => Command::Repl,
             Some("--version") | Some("-v") => {
                 println!("oslc {}", env!("CARGO_PKG_VERSION"));
                 process::exit(0);
@@ -120,6 +123,7 @@ fn main() {
         Command::Lint => lint_file(&config),
         Command::Format => format_file(&config),
         Command::Typecheck => typecheck_file(&config),
+        Command::Repl => run_repl(),
         Command::Start | Command::Stop | Command::Restart | Command::Logs | Command::Metrics | Command::Health => {
             eprintln!("Server commands require a running server.");
             print_help();
@@ -135,6 +139,11 @@ fn print_help() {
     println!("Commands:");
     println!("  run        Run an OSL file");
     println!("  build      Compile to binary");
+    println!("  check      Syntax check only");
+    println!("  typecheck Type check only");
+    println!("  repl       Interactive REPL");
+    println!("  init       Initialize new project");
+    println!("  format     Format OSL file");
     println!("  check      Check syntax");
     println!("  lint       Lint code");
     println!("  fmt        Format code");
@@ -375,4 +384,82 @@ fn compile_to_binary(path: &str, output: &str, config: &Config) -> Result<(), St
 
     println!("Compiled to: {}", output);
     Ok(())
+}
+
+fn run_repl() {
+    use std::io::{self, Write};
+    
+    println!("OSL REPL v{}", env!("CARGO_PKG_VERSION"));
+    println!("Type :help for commands, :quit to exit\n");
+    
+    let mut history: Vec<String> = Vec::new();
+    
+    loop {
+        print!(">> ");
+        io::stdout().flush().ok();
+        
+        let mut input = String::new();
+        match io::stdin().read_line(&mut input) {
+            Ok(0) => break,
+            Ok(_) => {}
+            Err(_) => break,
+        }
+        
+        let input = input.trim().to_string();
+        if input.is_empty() {
+            continue;
+        }
+        
+        if input == ":quit" || input == ":q" || input == ":exit" {
+            println!("Goodbye!");
+            break;
+        }
+        
+        if input == ":help" || input == ":h" {
+            println!("Commands:");
+            println!("  :help, :h    - Show this help");
+            println!("  :clear       - Clear screen");
+            println!("  :quit, :q    - Exit REPL");
+            println!("  :ast         - Show last AST");
+            println!("  :type        - Type check last expression");
+            println!();
+            continue;
+        }
+        
+        if input == ":clear" {
+            print!("\x1B[2J\x1B[1;1H");
+            continue;
+        }
+        
+        history.push(input.clone());
+        
+        let code = format!("let __repl_expr = {};", input);
+        
+        let tokens = Lexer::new(code).tokenize();
+        let mut parser = Parser::new(tokens);
+        let mut program = parser.parse();
+        
+        if let Some(stmt) = program.statements.pop() {
+            if let Stmt::VarDecl { name, ty, value } = stmt {
+                if name == "__repl_expr" {
+                    if let Some(expr) = value {
+                        println!("  = {:?}", expr);
+                    }
+                }
+            }
+        }
+        
+        let mut checker = TypeChecker::new();
+        match checker.check(&program) {
+            Ok(_) => {
+                let rust = codegen::generate_rust(&program);
+                println!("  Ok");
+            }
+            Err(errs) => {
+                for e in errs {
+                    eprintln!("  Error: {}", e.message);
+                }
+            }
+        }
+    }
 }

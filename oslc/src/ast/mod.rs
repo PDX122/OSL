@@ -119,10 +119,17 @@ impl Type {
 pub struct Program {
     pub statements: Vec<Stmt>,
     pub exports: HashMap<String, Type>,
+    pub imports: Vec<Import>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Import {
+    pub path: String,
+    pub alias: Option<String>,
 }
 
 impl Program {
     pub fn new() -> Self {
-        Program { statements: Vec::new(), exports: HashMap::new() }
+        Program { statements: Vec::new(), exports: HashMap::new(), imports: Vec::new() }
     }
 }

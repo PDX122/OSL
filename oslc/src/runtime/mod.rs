@@ -9,6 +9,14 @@ pub mod cache;
 pub mod logging;
 pub mod auth;
 pub mod websocket;
+pub mod net;
+pub mod crypto;
+pub mod json;
+pub mod async_std;
+pub mod prometheus;
+pub mod redis;
+pub mod testing;
+pub mod community;
 
 pub use http::*;
 pub use db::*;
@@ -16,6 +24,14 @@ pub use cache::*;
 pub use logging::*;
 pub use auth::*;
 pub use websocket::*;
+pub use net::*;
+pub use crypto::*;
+pub use json::*;
+pub use async_std::*;
+pub use prometheus::*;
+pub use redis::*;
+pub use testing::*;
+pub use community::*;
 
 #[derive(Debug, Clone)]
 pub struct ServerConfig {

@@ -40,6 +40,10 @@ impl CodeGen {
         self.add_import("use std::time::Duration;");
         self.line("");
         
+        for import in &program.imports {
+            self.generate_import(import);
+        }
+        
         self.line("fn main() {");
         self.indent();
         
@@ -51,6 +55,25 @@ impl CodeGen {
         self.line("}");
         
         self.imports.join("\n") + "\n\n" + &self.output
+    }
+
+    fn generate_import(&mut self, import: &Import) {
+        let path = &import.path;
+        let module = if path.starts_with("std/") {
+            let pkg = path.trim_start_matches("std/");
+            format!("crate::runtime::{}", pkg)
+        } else if path.starts_with("osl/") {
+            let pkg = path.trim_start_matches("osl/");
+            format!("crate::runtime::{}", pkg)
+        } else if path.starts_with("community/") {
+            let pkg = path.trim_start_matches("community/");
+            format!("crate::runtime::community::{}", pkg)
+        } else {
+            path.to_string()
+        };
+        
+        self.add_import(&format!("use {};", module));
+        self.line(&format!("// Imported: {}", path));
     }
 
     fn add_import(&mut self, import: &str) {
