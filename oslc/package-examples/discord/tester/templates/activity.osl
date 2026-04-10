@@ -1,0 +1,47 @@
+// USER ACTIVITY TRACKER
+// Track user signups, logins, actions
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+let COLOR_SIGNUP = 3066993;
+let COLOR_LOGIN = 3447003;
+let COLOR_LOGOUT = 9807270;
+let COLOR_PURCHASE = 15105570;
+let COLOR_DELETE = 15158332;
+
+fn notify_signup(username: str, email: str, ip: str) {
+    let msg = "Username: " + username + ", Email: " + email + ", IP: " + ip;
+    send_embed(WEBHOOK_URL, "[NEW] Signup", msg, COLOR_SIGNUP);
+}
+
+fn notify_login(username: str, ip: str, success: bool) {
+    let color = success ? COLOR_LOGIN : COLOR_DELETE;
+    let title = success ? "[OK] Login" : "[FAIL] Login Failed";
+    let msg = "Username: " + username + ", IP: " + ip;
+    send_embed(WEBHOOK_URL, title, msg, color);
+}
+
+fn notify_logout(username: str) {
+    let msg = "Username: " + username;
+    send_embed(WEBHOOK_URL, "[BYE] Logout", msg, COLOR_LOGOUT);
+}
+
+fn notify_purchase(username: str, item: str, amount: str) {
+    let msg = "User: " + username + ", Item: " + item + ", Amount: " + amount;
+    send_embed(WEBHOOK_URL, "[BUY] Purchase", msg, COLOR_PURCHASE);
+}
+
+fn notify_account_deleted(username: str, reason: str) {
+    let msg = "Username: " + username + ", Reason: " + reason;
+    send_embed(WEBHOOK_URL, "[DEL] Account Deleted", msg, COLOR_DELETE);
+}
+
+// Demo:
+fn main() {
+    notify_signup("testuser", "test@example.com", "192.168.1.1");
+    notify_login("testuser", "192.168.1.1", true);
+}
+
+main();

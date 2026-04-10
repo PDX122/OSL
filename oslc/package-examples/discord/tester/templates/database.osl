@@ -1,0 +1,50 @@
+// DATABASE ALERTS
+// Monitor DB connections and queries
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+let COLOR_QUERY = 3447003;
+let COLOR_SLOW_QUERY = 16073277;
+let COLOR_CONNECTION = 15105570;
+let COLOR_BACKUP = 3066993;
+let COLOR_RESTORE = 9807270;
+let COLOR_OFFLINE = 15158332;
+
+fn slow_query_detected(query: str, duration_ms: i64, table: str) {
+    let msg = "Query: " + query + ", Duration: " + string(duration_ms) + "ms, Table: " + table;
+    send_embed(WEBHOOK_URL, "[SLOW] Slow Query", msg, COLOR_SLOW_QUERY);
+}
+
+fn too_many_connections(current: i64, max: i64) {
+    let msg = "Current: " + string(current) + ", Max: " + string(max);
+    send_embed(WEBHOOK_URL, "[WARN] Connection Pool Warning", msg, COLOR_CONNECTION);
+}
+
+fn connection_failed(host: str, reason: str) {
+    let msg = "Host: " + host + ", Reason: " + reason;
+    send_embed(WEBHOOK_URL, "[ERR] Database Connection Failed", msg, COLOR_OFFLINE);
+}
+
+fn backup_started(name: str) {
+    send_embed(WEBHOOK_URL, "[START] Backup Started", "Database: " + name, COLOR_BACKUP);
+}
+
+fn backup_completed(name: str, size: str, duration: str) {
+    let msg = "Database: " + name + ", Size: " + size + ", Duration: " + duration;
+    send_embed(WEBHOOK_URL, "[OK] Backup Complete", msg, COLOR_BACKUP);
+}
+
+fn restore_completed(name: str, tables: i64) {
+    let msg = "Database: " + name + ", Tables Restored: " + string(tables);
+    send_embed(WEBHOOK_URL, "[OK] Restore Complete", msg, COLOR_RESTORE);
+}
+
+// Demo:
+fn main() {
+    backup_completed("production_db", "2.5GB", "15m 30s");
+    slow_query_detected("SELECT * FROM users", 5000, "users");
+}
+
+main();

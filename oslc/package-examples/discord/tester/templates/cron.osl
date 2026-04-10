@@ -1,0 +1,51 @@
+// CRON JOB MONITOR
+// Get notified when jobs run or fail
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+let COLOR_START = 3447003;
+let COLOR_SUCCESS = 3066993;
+let COLOR_FAILED = 15158332;
+let COLOR_TIMEOUT = 16073277;
+
+// Generic job notifier
+fn job_started(name: str, scheduled: str) {
+    let msg = "Job: " + name + ", Scheduled: " + scheduled;
+    send_embed(WEBHOOK_URL, "[START] Job Started", msg, COLOR_START);
+}
+
+fn job_success(name: str, duration: str, output: str) {
+    let msg = "Job: " + name + ", Duration: " + duration + ", Output: " + output;
+    send_embed(WEBHOOK_URL, "[OK] Job Complete", msg, COLOR_SUCCESS);
+}
+
+fn job_failed(name: str, error: str, exit_code: i64) {
+    let msg = "Job: " + name + ", Error: " + error + ", Exit Code: " + string(exit_code);
+    send_embed(WEBHOOK_URL, "[FAIL] Job Failed", msg, COLOR_FAILED);
+}
+
+fn job_timeout(name: str, max_time: str) {
+    let msg = "Job: " + name + ", Max Time: " + max_time + ", Reason: Timed out";
+    send_embed(WEBHOOK_URL, "[TIMEOUT] Job Timeout", msg, COLOR_TIMEOUT);
+}
+
+// Predefined job types
+fn backup_completed(name: str, size: str) {
+    let msg = "Backup: " + name + ", Size: " + size;
+    send_embed(WEBHOOK_URL, "[OK] Backup Complete", msg, COLOR_SUCCESS);
+}
+
+fn sync_completed(service: str, items: i64) {
+    let msg = "Service: " + service + ", Items Synced: " + string(items);
+    send_embed(WEBHOOK_URL, "[OK] Sync Complete", msg, COLOR_SUCCESS);
+}
+
+// Demo:
+fn main() {
+    job_success("Daily Backup", "2m 30s", "OK");
+    backup_completed("prod-db", "1.2GB");
+}
+
+main();

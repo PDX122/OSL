@@ -1,0 +1,50 @@
+// GITHUB NOTIFICATIONS
+// Get Discord notifications for GitHub
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+let COLOR_PUSH = 3447003;
+let COLOR_PR = 3066993;
+let COLOR_ISSUE = 15105570;
+let COLOR_RELEASE = 8338334;
+let COLOR_WIKI = 9807270;
+
+fn notify_push(repo: str, branch: str, author: str, commits: i64, message: str) {
+    let msg = "Repository: " + repo + ", Branch: " + branch + ", Author: " + author + ", Commits: " + string(commits) + ", Latest: " + message;
+    send_embed(WEBHOOK_URL, "[PUSH] Git Push", msg, COLOR_PUSH);
+}
+
+fn notify_pr_opened(repo: str, pr_number: i64, title: str, author: str) {
+    let msg = "Repository: " + repo + ", PR: #" + string(pr_number) + ", Title: " + title + ", Author: " + author;
+    send_embed(WEBHOOK_URL, "[PR] PR Opened", msg, COLOR_PR);
+}
+
+fn notify_pr_merged(repo: str, pr_number: i64, author: str) {
+    let msg = "Repository: " + repo + ", PR: #" + string(pr_number) + ", Merged by: " + author;
+    send_embed(WEBHOOK_URL, "[PR] PR Merged", msg, COLOR_PR);
+}
+
+fn notify_issue_opened(repo: str, issue_number: i64, title: str, author: str) {
+    let msg = "Repository: " + repo + ", Issue: #" + string(issue_number) + ", Title: " + title + ", Author: " + author;
+    send_embed(WEBHOOK_URL, "[BUG] Issue Opened", msg, COLOR_ISSUE);
+}
+
+fn notify_release(repo: str, version: str, author: str, notes: str) {
+    let msg = "Repository: " + repo + ", Version: " + version + ", Author: " + author + ", Notes: " + notes;
+    send_embed(WEBHOOK_URL, "[NEW] Release Published", msg, COLOR_RELEASE);
+}
+
+fn notify_wiki_update(repo: str, page: str, author: str) {
+    let msg = "Repository: " + repo + ", Page: " + page + ", Updated by: " + author;
+    send_embed(WEBHOOK_URL, "[WIKI] Wiki Updated", msg, COLOR_WIKI);
+}
+
+// Demo:
+fn main() {
+    notify_push("myorg/myrepo", "main", "dev", 3, "Fix bug in auth");
+    notify_pr_opened("myorg/myrepo", 42, "Add new feature", "developer");
+}
+
+main();

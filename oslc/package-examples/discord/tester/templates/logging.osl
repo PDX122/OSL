@@ -1,0 +1,58 @@
+// LOG MONITORING
+// Send logs to Discord
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+let LOG_WEBHOOK = "https://discord.com/api/webhooks/ANOTHER/WEBHOOK/HERE";
+
+let COLOR_TRACE = 9807270;
+let COLOR_DEBUG = 2983586;
+let COLOR_INFO = 3447003;
+let COLOR_WARN = 16073277;
+let COLOR_ERROR = 13338758;
+let COLOR_FATAL = 12338059;
+
+// Log levels
+fn log_trace(service: str, message: str) {
+    let msg = "Service: " + service + ", " + message;
+    send_embed(LOG_WEBHOOK, "[TRACE] " + service, msg, COLOR_TRACE);
+}
+
+fn log_debug(service: str, message: str) {
+    let msg = "Service: " + service + ", " + message;
+    send_embed(LOG_WEBHOOK, "[DEBUG] " + service, msg, COLOR_DEBUG);
+}
+
+fn log_info(service: str, message: str) {
+    let msg = "Service: " + service + ", " + message;
+    send_embed(LOG_WEBHOOK, "[INFO] " + service, msg, COLOR_INFO);
+}
+
+fn log_warn(service: str, message: str) {
+    let msg = "Service: " + service + ", " + message;
+    send_embed(LOG_WEBHOOK, "[WARN] " + service, msg, COLOR_WARN);
+}
+
+fn log_error(service: str, message: str) {
+    let msg = "Service: " + service + ", " + message;
+    send_embed(LOG_WEBHOOK, "[ERROR] " + service, msg, COLOR_ERROR);
+}
+
+fn log_fatal(service: str, message: str) {
+    let msg = "Service: " + service + ", " + message;
+    send_embed(LOG_WEBHOOK, "[FATAL] " + service, msg, COLOR_FATAL);
+}
+
+// Alert wrapper
+fn alert(message: str) {
+    send_message(LOG_WEBHOOK, "@everyone " + message);
+}
+
+// Demo:
+fn main() {
+    log_info("MyService", "Service started successfully");
+    log_warn("MyService", "High memory usage detected");
+}
+
+main();

@@ -1,0 +1,33 @@
+// CI/CD DEPLOY NOTIFICATION
+// Send deploy status to Discord
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+let BOT_NAME = "Deploy Bot";
+
+let COLOR_SUCCESS = 3066993;
+let COLOR_FAILED = 15158332;
+let COLOR_BUILDING = 3447003;
+
+fn deploy_started(branch: str, commit: str, author: str) {
+    let msg = "Build Started, Branch: " + branch + ", Commit: " + commit + ", Author: " + author;
+    send_embed(WEBHOOK_URL, "[BUILD] Deploy Started", msg, COLOR_BUILDING);
+}
+
+fn deploy_success(branch: str, version: str, duration: str) {
+    let msg = "Deploy Successful, Branch: " + branch + ", Version: " + version + ", Duration: " + duration;
+    send_embed(WEBHOOK_URL, "[OK] Deploy Complete", msg, COLOR_SUCCESS);
+}
+
+fn deploy_failed(branch: str, error: str) {
+    let msg = "Deploy Failed, Branch: " + branch + ", Error: " + error;
+    send_embed(WEBHOOK_URL, "[FAIL] Deploy Failed", msg, COLOR_FAILED);
+}
+
+// Demo:
+fn main() {
+    deploy_started("main", "abc123", "CI Bot");
+}
+
+main();

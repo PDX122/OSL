@@ -1,0 +1,39 @@
+// DISCORD WEBHOOK TEMPLATE
+// Copy this code into your .osl file
+
+import discord/tester;
+
+// YOUR webhook URL - get it from Discord channel settings > Integrations > Webhooks
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+// Example: Send a simple message
+fn notify(message: str) {
+    send_message(WEBHOOK_URL, message);
+}
+
+// Example: Send with bot name
+fn notify_as(username: str, message: str) {
+    send_as(WEBHOOK_URL, message, username, "");
+}
+
+// Example: Send an embed
+fn notify_embed(title: str, description: str, color: i64) {
+    send_embed(WEBHOOK_URL, title, description, color);
+}
+
+// Your server code:
+// server App {
+//     port: 8080
+// }
+//
+// route GET "/ping" (req) {
+//     notify("Someone pinged the server!");
+//     return { "status": "pong" };
+// }
+
+// Demo: Send a test message (remove when running as server)
+fn main() {
+    notify("Hello from OSL!");
+}
+
+main();

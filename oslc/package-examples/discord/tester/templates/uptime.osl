@@ -1,0 +1,45 @@
+// UPTIME MONITOR
+// Report server health
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+let COLOR_ONLINE = 3066993;
+let COLOR_OFFLINE = 15158332;
+let COLOR_SLOW = 16073277;
+let COLOR_DEGRADED = 15105570;
+let COLOR_SSL = 16073277;
+
+fn server_online(name: str, uptime: str, response_ms: i64) {
+    let msg = "Server: " + name + ", Uptime: " + uptime + ", Response: " + string(response_ms) + "ms";
+    send_embed(WEBHOOK_URL, "[OK] Server Online", msg, COLOR_ONLINE);
+}
+
+fn server_offline(name: str, last_check: str) {
+    let msg = "Server: " + name + ", Last Check: " + last_check + ", Issue: No response";
+    send_embed(WEBHOOK_URL, "[DOWN] Server Offline", msg, COLOR_OFFLINE);
+}
+
+fn server_slow(name: str, response_ms: i64, threshold_ms: i64) {
+    let msg = "Server: " + name + ", Response: " + string(response_ms) + "ms (threshold: " + string(threshold_ms) + "ms)";
+    send_embed(WEBHOOK_URL, "[SLOW] Server Slow", msg, COLOR_SLOW);
+}
+
+fn server_degraded(name: str, reason: str) {
+    let msg = "Server: " + name + ", Issue: " + reason;
+    send_embed(WEBHOOK_URL, "[WARN] Server Degraded", msg, COLOR_DEGRADED);
+}
+
+fn ssl_expiring(name: str, days_left: i64) {
+    let msg = "Domain: " + name + ", Days Until Expiry: " + string(days_left);
+    send_embed(WEBHOOK_URL, "[SSL] Certificate Expiring", msg, COLOR_SSL);
+}
+
+// Demo:
+fn main() {
+    server_online("api.example.com", "30 days", 45);
+    ssl_expiring("example.com", 14);
+}
+
+main();

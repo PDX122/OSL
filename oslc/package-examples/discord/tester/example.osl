@@ -1,0 +1,43 @@
+// discord/tester - Example usage
+// This file demonstrates the package's functions
+
+import discord/tester;
+
+// Replace with your webhook URL
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+// Color presets
+let GREEN = 3066993;
+let RED = 15158332;
+let BLUE = 3447003;
+
+// Send a simple message
+fn test_message() {
+    send_message(WEBHOOK_URL, "Hello from discord/tester package! 🎉");
+}
+
+// Send a rich embed
+fn test_embed() {
+    send_embed(WEBHOOK_URL, "Test Embed", "This is a test embed message", GREEN);
+}
+
+// Send with custom username
+fn test_custom() {
+    send_as(WEBHOOK_URL, "Running a test!", "OSL Tester", "");
+}
+
+// Demo: Simulate different alert types
+fn demo_alerts() {
+    send_embed(WEBHOOK_URL, "✅ Success", "Everything is working fine", GREEN);
+    send_embed(WEBHOOK_URL, "⚠️ Warning", "Something might be wrong", 15105570);
+    send_embed(WEBHOOK_URL, "❌ Error", "Something failed!", RED);
+}
+
+// Run demos
+fn main() {
+    test_message();
+    test_embed();
+    demo_alerts();
+}
+
+main();

@@ -1,0 +1,49 @@
+// METRICS DASHBOARD
+// Report metrics to Discord
+
+import discord/tester;
+
+let WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR/WEBHOOK/HERE";
+
+let COLOR_METRICS = 8338334;
+let COLOR_SPIKE = 15158332;
+let COLOR_LOW = 16073277;
+
+fn report_metrics(
+    cpu_percent: f64,
+    memory_used: i64,
+    memory_total: i64,
+    disk_used: i64,
+    disk_total: i64,
+    network_in: i64,
+    network_out: i64
+) {
+    let mem_pct = (memory_used * 100) / memory_total;
+    let disk_pct = (disk_used * 100) / disk_total;
+    
+    let msg = "CPU: " + string(cpu_percent) + "%, Memory: " + string(memory_used) + "MB / " + string(memory_total) + "MB (" + string(mem_pct) + "%), Disk: " + string(disk_used) + "GB / " + string(disk_total) + "GB (" + string(disk_pct) + "%), Network: IN " + string(network_in) + "MB OUT " + string(network_out) + "MB";
+    
+    send_embed(WEBHOOK_URL, "[STATS] Server Metrics", msg, COLOR_METRICS);
+}
+
+fn alert_cpu_spike(server_name: str, cpu_percent: f64) {
+    let msg = "Server: " + server_name + ", CPU: " + string(cpu_percent) + "%";
+    send_embed(WEBHOOK_URL, "[ALERT] CPU Spike Detected", msg, COLOR_SPIKE);
+}
+
+fn alert_memory_low(server_name: str, free_mb: i64) {
+    let msg = "Server: " + server_name + ", Free Memory: " + string(free_mb) + "MB";
+    send_embed(WEBHOOK_URL, "[WARN] Low Memory", msg, COLOR_LOW);
+}
+
+fn alert_disk_full(server_name: str, percent: f64) {
+    let msg = "Server: " + server_name + ", Disk Usage: " + string(percent) + "%";
+    send_embed(WEBHOOK_URL, "[CRIT] Disk Space Critical", msg, COLOR_SPIKE);
+}
+
+// Demo:
+fn main() {
+    report_metrics(45.5, 4096, 8192, 120, 500, 150, 80);
+}
+
+main();

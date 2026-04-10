@@ -73,6 +73,7 @@ pub enum Stmt {
     Db { name: String, kind: String, config: HashMap<String, Expr> },
     Cache { name: String, kind: String, config: HashMap<String, Expr> },
     LogConfig(HashMap<String, Expr>),
+    LogStmt { level: String, message: Expr },
     Health(HashMap<String, Expr>),
     Metrics { kind: String, config: HashMap<String, Expr> },
     Monitor(HashMap<String, Expr>),

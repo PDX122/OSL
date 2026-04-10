@@ -119,12 +119,13 @@ impl Lexer {
         loop {
             self.skip_whitespace();
             self.skip_comment();
+            self.skip_whitespace();
+            
             if self.is_at_end() {
                 tokens.push(Token::Eof);
                 break;
             }
-            let token = self.next_token();
-            tokens.push(token);
+            tokens.push(self.next_token());
         }
         tokens
     }
@@ -136,20 +137,30 @@ impl Lexer {
     }
 
     fn skip_comment(&mut self) {
-        if self.peek() == Some('/') {
-            if self.peek_next() == Some('/') {
-                while !self.is_at_end() && self.peek() != Some('\n') {
-                    self.advance();
-                }
-            } else if self.peek_next() == Some('*') {
-                self.advance(); self.advance();
-                while !self.is_at_end() {
-                    if self.peek() == Some('*') && self.peek_next() == Some('/') {
-                        self.advance(); self.advance();
-                        break;
+        loop {
+            if self.peek() == Some('/') {
+                if self.peek_next() == Some('/') {
+                    while !self.is_at_end() && self.peek() != Some('\n') {
+                        self.advance();
                     }
-                    self.advance();
+                } else if self.peek_next() == Some('*') {
+                    self.advance(); self.advance();
+                    while !self.is_at_end() {
+                        if self.peek() == Some('*') && self.peek_next() == Some('/') {
+                            self.advance(); self.advance();
+                            break;
+                        }
+                        self.advance();
+                    }
+                } else {
+                    break;
                 }
+            } else {
+                break;
+            }
+            // Skip trailing whitespace and any additional comment lines
+            while !self.is_at_end() && self.peek().map(|c| c.is_whitespace()).unwrap_or(false) {
+                self.advance();
             }
         }
     }
@@ -198,7 +209,17 @@ impl Lexer {
             '?' => Token::Symbol(Symbol::Question),
             '^' => Token::Symbol(Symbol::Caret),
             '+' => self.match_assign(Symbol::PlusAssign, Symbol::Plus),
-            '-' => self.match_assign_or(Symbol::MinusAssign, Symbol::Minus, '-'),
+            '-' => {
+                if self.peek() == Some('>') {
+                    self.advance();
+                    Token::Symbol(Symbol::Arrow)
+                } else if self.peek() == Some('=') {
+                    self.advance();
+                    Token::Symbol(Symbol::MinusAssign)
+                } else {
+                    Token::Symbol(Symbol::Minus)
+                }
+            },
             '*' => self.match_assign(Symbol::MulAssign, Symbol::Star),
             '/' => self.match_assign(Symbol::DivAssign, Symbol::Slash),
             '%' => Token::Symbol(Symbol::Percent),
@@ -237,7 +258,7 @@ impl Lexer {
     fn match_assign_or(&mut self, assign: Symbol, base: Symbol, next: char) -> Token {
         match self.peek() {
             Some('=') => { self.advance(); Token::Symbol(assign) }
-            Some(n) if n == next => { self.advance(); Token::Symbol(Symbol::Or) }
+            Some(n) if n == next => { self.advance(); Token::Symbol(assign) }
             _ => Token::Symbol(base),
         }
     }

@@ -1,0 +1,45 @@
+// DISCORD EMBED TEMPLATE
+// Rich embed messages with colors
+
+import discord/tester;
+
+let WEBHOOK_URL = "empty";
+
+// Color presets (decimal, not hex)
+let COLOR_GREEN = 3066993;
+let COLOR_RED = 15158332;
+let COLOR_ORANGE = 15105570;
+let COLOR_PURPLE = 8338334;
+
+// Send a success notification
+fn notify_success(title: str, message: str) {
+    send_embed(WEBHOOK_URL, "[OK] " + title, message, COLOR_GREEN);
+}
+
+// Send an error notification  
+fn notify_error(title: str, message: str) {
+    send_embed(WEBHOOK_URL, "[ERR] " + title, message, COLOR_RED);
+}
+
+// Send a warning notification
+fn notify_warning(title: str, message: str) {
+    send_embed(WEBHOOK_URL, "[WARN] " + title, message, COLOR_ORANGE);
+}
+
+// Example usage in your server:
+// route POST "/health" (req) {
+//     let status = check_health();
+//     if status.ok {
+//         notify_success("Health Check", "All systems operational");
+//     } else {
+//         notify_error("Health Check Failed", "Service: " + status.service);
+//     }
+//     return status;
+// }
+
+// Run a demo on execution:
+fn main() {
+    notify_success("OSL Test", "discord/tester package is working!");
+}
+
+main();
